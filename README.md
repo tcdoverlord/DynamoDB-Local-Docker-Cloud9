@@ -1,26 +1,40 @@
+---
+
 # ☁️ DynamoDB Local Deployment with AWS Cloud9
 
-A hands-on AWS project demonstrating how to deploy and manage **DynamoDB Local** within an **AWS Cloud9** development environment using **Docker**, **Docker Compose**, **Python automation**, and **Linux administration**.
+A hands-on AWS development project demonstrating how to deploy and manage **DynamoDB Local** inside an **AWS Cloud9 environment** using Docker, Docker Compose, Python automation, and Linux administration.
 
-This project provides a lightweight local database environment for development, testing, and learning DynamoDB workflows without consuming AWS resources.
+This project builds a **fully local cloud-like database environment** for development, testing, and learning without consuming AWS production resources.
+
+---
+
+# 🧠 Architecture Overview
+
+<p align="center">
+  <img src="dynamodb-cloud9-architecture-diagram.png" alt="DynamoDB Cloud9 Architecture Diagram" width="900"/>
+</p>
+
+### 📌 System Flow
+
+* AWS Cloud9 provides the development environment
+* Python script prepares local storage permissions
+* Docker Compose launches container services
+* DynamoDB Local runs on port **8002**
+* DynamoDB Admin UI runs on port **8001**
+* Browser connects to services for database management and testing
 
 ---
 
 # 🚀 Project Overview
 
-This project walks through the complete setup process for:
+This project walks through a complete local AWS-style database deployment including:
 
-✅ AWS Cloud9 Development Environment
-
-✅ DynamoDB Local Deployment
-
-✅ Docker Container Management
-
-✅ DynamoDB Admin Web Interface
-
-✅ Python-Based Environment Preparation
-
-✅ Linux Bash Administration
+* AWS Cloud9 development environment setup
+* DynamoDB Local container deployment
+* DynamoDB Admin web interface
+* Docker and Docker Compose orchestration
+* Python automation for environment preparation
+* Linux system configuration and permissions
 
 ---
 
@@ -31,35 +45,32 @@ This project walks through the complete setup process for:
 * Docker
 * Docker Compose
 * Python 3
-* Linux Bash
-* YAML Configuration
+* Linux (Bash)
+* YAML configuration
 
 ---
 
 # 🎯 Skills Demonstrated
 
-This project showcases practical experience with:
-
-* Cloud Development Environments
-* Infrastructure Automation
-* Containerized Applications
-* Database Deployment
-* Linux System Administration
-* Python Scripting
-* DevOps Workflows
-* AWS Development Tools
+* Cloud development environments
+* Infrastructure automation
+* Containerized application deployment
+* AWS service simulation
+* Linux system administration
+* Python scripting
+* DevOps workflows
 
 ---
 
 # 📋 Prerequisites
 
-Before beginning, ensure the following are installed:
+Ensure the following are installed in your Cloud9 environment:
 
-* AWS Cloud9 Environment
+* AWS Cloud9
 * Docker
 * Docker Compose
 * Python 3
-* Sudo Privileges
+* Sudo privileges
 
 Verify installation:
 
@@ -73,51 +84,42 @@ python3 --version
 
 # 📂 Step 1 — Navigate to Home Directory
 
-Move to your Cloud9 home directory:
-
 ```bash
 cd ..
 ls -l
 ```
 
-Verify that you are working within your user home folder before creating files.
+Ensure you are in the correct working directory.
 
 ---
 
-# 🐍 Step 2 — Create Python Setup Script
+# 🐍 Step 2 — Python Setup Script
 
-Create a file named:
+Create:
 
 ```text
 setup_dynamodb.py
 ```
 
-This script creates the required DynamoDB data directory and applies permissions needed for local storage.
+### Script:
 
 ```python
 import os
 
 def setup_dynamodb_local():
-
     dynamodb_data_path = "/home/dynamodb/data"
 
     try:
         os.makedirs(dynamodb_data_path, exist_ok=True)
 
-        print(
-            f"Directory created or already exists: {dynamodb_data_path}"
-        )
+        print(f"Directory created or already exists: {dynamodb_data_path}")
 
         os.chmod(dynamodb_data_path, 0o777)
 
-        print(
-            f"Permissions set to 777 for: {dynamodb_data_path}"
-        )
+        print(f"Permissions set to 777 for: {dynamodb_data_path}")
 
     except PermissionError:
-        print(
-            "Permission denied. Run with elevated privileges."
-        )
+        print("Permission denied. Run with elevated privileges.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -128,18 +130,16 @@ if __name__ == "__main__":
 
 ---
 
-# 🐳 Step 3 — Create Docker Compose Configuration
+# 🐳 Step 3 — Docker Compose Configuration
 
-Create a file named:
+Create:
 
 ```text
 docker-compose.yml
 ```
 
-Paste the following configuration:
-
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
 
@@ -147,29 +147,21 @@ services:
     image: amazon/dynamodb-local:latest
     container_name: dynamodb-local
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-
     ports:
       - "8002:8000"
-
     restart: always
-
     volumes:
       - "./data:/home/dynamodblocal/data"
-
     working_dir: /home/dynamodblocal
 
   dynamodb-admin:
     image: aaronshaf/dynamodb-admin
     container_name: dynamodb-admin
-
     depends_on:
       - dynamodb-local
-
     restart: always
-
     ports:
       - "8001:8001"
-
     environment:
       - DYNAMO_ENDPOINT=http://dynamodb-local:8000
       - AWS_REGION=us-east-2
@@ -179,19 +171,13 @@ services:
 
 # ⚙️ Step 4 — Initialize Storage
 
-Run the setup script:
-
 ```bash
 sudo python3 setup_dynamodb.py
 ```
 
-This creates the required DynamoDB storage directory and permissions.
-
 ---
 
-# 📦 Step 5 — Download DynamoDB Local
-
-Pull the official DynamoDB Local container:
+# 📦 Step 5 — Pull DynamoDB Image
 
 ```bash
 sudo docker pull amazon/dynamodb-local
@@ -201,14 +187,6 @@ sudo docker pull amazon/dynamodb-local
 
 # ▶️ Step 6 — Start Services
 
-Run interactively:
-
-```bash
-sudo docker-compose up
-```
-
-Or run in the background:
-
 ```bash
 sudo docker-compose up -d
 ```
@@ -217,57 +195,43 @@ sudo docker-compose up -d
 
 # 🔍 Step 7 — Verify Deployment
 
-Check running containers:
-
 ```bash
 sudo docker ps
-```
-
-Verify Docker Compose:
-
-```bash
-docker-compose --version
-```
-
-Verify created files:
-
-```bash
 ls -l
 ```
 
 ---
 
-# 🌐 Access DynamoDB Admin
+# 🌐 Access Services
 
-After deployment:
-
-| Service        | URL                   |
-| -------------- | --------------------- |
-| DynamoDB Admin | http://localhost:8001 |
-| DynamoDB Local | http://localhost:8002 |
+| Service        | URL                                            |
+| -------------- | ---------------------------------------------- |
+| DynamoDB Admin | [http://localhost:8001](http://localhost:8001) |
+| DynamoDB Local | [http://localhost:8002](http://localhost:8002) |
 
 ---
 
-# 🧠 Learning Outcomes
+# 📊 Learning Outcomes
 
-By completing this project you gain experience with:
-
-* AWS Cloud9
-* DynamoDB Local
-* Docker Containers
-* Docker Networking
-* Linux Administration
-* Python Automation
-* Cloud Development Workflows
-* Infrastructure Deployment
+* AWS Cloud9 environment usage
+* Local AWS service simulation
+* Docker container orchestration
+* Python automation scripting
+* Linux permissions management
+* DevOps-style deployment workflow
 
 ---
 
 # 🏗️ Project Purpose
 
-This project was created to demonstrate practical cloud administration and development skills by building a local DynamoDB environment using AWS Cloud9 and modern containerization technologies.
+This project demonstrates how to build a **repeatable local AWS-like database environment** using modern DevOps tools.
 
-The focus is on repeatable deployments, automation, and hands-on AWS learning.
+It focuses on:
+
+* Infrastructure automation
+* Container-based deployment
+* Cloud development simulation
+* Safe local testing environments
 
 ---
 
@@ -275,12 +239,12 @@ The focus is on repeatable deployments, automation, and hands-on AWS learning.
 
 **TCD_Overlord**
 
-GitHub:
-
-https://github.com/tcdoverlord
+GitHub: [https://github.com/tcdoverlord](https://github.com/tcdoverlord)
 
 ---
 
 # 📄 License
 
-This project is released under the MIT License.
+MIT License
+
+---
